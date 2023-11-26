@@ -1,37 +1,31 @@
-import { _decorator, Component, EventMouse, Input, debug, Node, input, Layout, Prefab, instantiate } from 'cc';
+import { _decorator, Button, Component, director } from 'cc';
 const { ccclass, property } = _decorator;
 
+/**
+ * App主场景逻辑
+ */
 @ccclass('Main')
 export class Main extends Component {
 
-    @property({ type: Layout })
-    public layout: Layout = null!;
-    @property({ type: Prefab })
-    public cardPrefab: Prefab = null!;
-    @property({ type: Number })
-    public size_num: number = 0;
+    // 定义开始游戏按钮
+    @property({ type: Button })
+    public startBtn: Button = null!;
 
     start() {
-        console.info('hello world!');
-        for (let i = 0; i < this.size_num; i++) {
-            const card = instantiate(this.cardPrefab);
-            this.layout.node.addChild(card);
-        }
-
+        // 监听开始游戏按钮的点击事件
+        this.startBtn.node.on('click', this.onStartBtnClick, this);
     }
 
     update(deltaTime: number) {
 
     }
 
-    onMouseUp(event: EventMouse) {
-        console.info("onMouseUp");
+    /** 开始游戏按钮点击响应 */
+    onStartBtnClick() {
+        // 进入游戏场景 GameScene
+        director.loadScene('GameScene');
     }
 
-    onStartBtnClick() {
-        // 输出点击日志
-        console.info("startBtn clicked");
-    }
 }
 
 
