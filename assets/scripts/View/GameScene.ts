@@ -43,7 +43,7 @@ export class GameScene extends Component {
         // 初始化卡片列表
         this._initCardList();
         // 在timerLab上显示倒计时
-        this.schedule(this._onTimer, 1);
+        this.schedule(this._onLookTimer, 1);
     }
 
     /** 增加得分 */
@@ -51,6 +51,8 @@ export class GameScene extends Component {
         this._score += 1;
         this.scoreLab.string = "得分：" + this._score.toString();
         if (this._score >= this._scoreLimit) {
+            // 取消定时器
+            this.unschedule(this._onGameTimer);
             // 启动定时器，跳转到游戏开始场景
             this.scheduleOnce(() => {
                 director.loadScene('Main');
@@ -122,7 +124,7 @@ export class GameScene extends Component {
     }
 
     /** 定时器回调 */
-    private _onTimer() {
+    private _onLookTimer() {
         this._timerCount += 1;
         const time = this.timerLimit - this._timerCount;
         this.timerLab.string = "记忆时间：" + time;
@@ -135,8 +137,16 @@ export class GameScene extends Component {
             card?.setLabel(false);
         });
         // 取消定时器
-        this.unschedule(this._onTimer);
+        this.unschedule(this._onLookTimer);
         this._forbidClick = false;
+        this._timerCount = 0;
+        this.schedule(this._onGameTimer, 1);
+    }
+
+    // 游戏时间
+    private _onGameTimer() {
+        this._timerCount += 1;
+        this.timerLab.string = "游戏时间：" + this._timerCount;
     }
 }
 
