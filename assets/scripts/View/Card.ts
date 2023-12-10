@@ -1,4 +1,4 @@
-import { _decorator, Component, Label, Input, EventMouse, input, Button, EventHandler } from 'cc';
+import { _decorator, Component, Label, SpriteFrame, resources, Sprite, Button, EventHandler } from 'cc';
 const { ccclass, property } = _decorator;
 
 /**
@@ -19,6 +19,8 @@ export class Card extends Component {
     start() {
         // 绑定点击事件
         this.btnCard.node.on(Button.EventType.CLICK, this.onClickCard, this);
+        // 加载当前目录下spriteFrame资源 db://assets/GameRes/Images/fruits.plist/fruits_03
+
     }
 
     /** 设置文字显示 */
@@ -42,6 +44,18 @@ export class Card extends Component {
         this.label.string = name;
     }
 
+    /** 设置卡片上的图片 */
+    public setImage(imgPath: string) {
+        resources.load(imgPath, SpriteFrame, (err, spriteFrame) => {
+            if (err) {
+                console.log(err);
+                return;
+            }
+            // 设置卡片的背景
+            this.btnCard.getComponent(Sprite)!.spriteFrame = spriteFrame;
+        });
+    }
+
     /** 获取卡片的显示文字 */
     public getCardName() {
         return this.cardName;
@@ -51,7 +65,7 @@ export class Card extends Component {
 
     /** 当前卡片的点击回调处理 */
     private onClickCard() {
-        if(this._clickCallback == null) {
+        if (this._clickCallback == null) {
             return;
         }
         // 调用点击回调

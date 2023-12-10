@@ -1,5 +1,6 @@
 import { _decorator, Component, director, Layout, Prefab, instantiate, CCInteger, Label } from 'cc';
 import { Card } from './Card';
+import { ConfigLoader } from '../Config/ConfigLoader';
 const { ccclass, property } = _decorator;
 
 /**
@@ -45,6 +46,7 @@ export class GameScene extends Component {
         // 在timerLab上显示倒计时
         this.schedule(this._onLookTimer, 1);
     }
+    /** 内部函数 ------------------------------- */
 
     /** 增加得分 */
     private _addScore() {
@@ -61,7 +63,7 @@ export class GameScene extends Component {
     }
 
     /** 卡片的点击响应函数 */
-    onClickCard(card: Card) {
+    private onClickCard(card: Card) {
         if (this._forbidClick) return;
         card?.setLabel(true);
         // 将卡片添加到选中列表中
@@ -86,6 +88,12 @@ export class GameScene extends Component {
 
     /** 初始化当前卡片列表 */
     private _initCardList() {
+        console.log(11111);
+        // 读取json文件，获取当前游戏的配置信息
+        const config = ConfigLoader.getInstance().loadConfig("img_card.json", (data) => {
+            console.log(33333);
+        });
+
         // 通过设定的数量，计算卡片上的数字
         let num = Math.floor(this.size_num / 2);
         this._scoreLimit = num;
