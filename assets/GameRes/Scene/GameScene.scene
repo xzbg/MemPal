@@ -182,14 +182,14 @@
     "_priority": 0,
     "_fov": 45,
     "_fovAxis": 0,
-    "_orthoHeight": 429.874686716792,
+    "_orthoHeight": 360,
     "_near": 0,
     "_far": 1000,
     "_color": {
       "__type__": "cc.Color",
-      "r": 255,
-      "g": 255,
-      "b": 255,
+      "r": 14,
+      "g": 5,
+      "b": 5,
       "a": 255
     },
     "_depth": 1,
@@ -376,8 +376,8 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 71.10163103070175,
-      "height": 50.400000000000006
+      "width": 71.123046875,
+      "height": 50.4
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -409,7 +409,7 @@
     "_string": "得分：0",
     "_horizontalAlign": 0,
     "_verticalAlign": 1,
-    "_actualFontSize": 24.9375,
+    "_actualFontSize": 20,
     "_fontSize": 20,
     "_fontFamily": "Arial",
     "_lineHeight": 40,
@@ -485,8 +485,8 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 111.08958920739349,
-      "height": 50.400000000000006
+      "width": 111.123046875,
+      "height": 50.4
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -518,7 +518,7 @@
     "_string": "记忆时间：0",
     "_horizontalAlign": 0,
     "_verticalAlign": 1,
-    "_actualFontSize": 24.9375,
+    "_actualFontSize": 20,
     "_fontSize": 20,
     "_fontFamily": "Arial",
     "_lineHeight": 40,
