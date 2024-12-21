@@ -1,4 +1,4 @@
-import { _decorator, Component, director, Layout, Prefab, instantiate, CCInteger, Label, Size, UITransform, math } from 'cc';
+import { _decorator, Component, director, Layout, Prefab, instantiate, CCInteger, Label, Size, UITransform, math, Button } from 'cc';
 import { PlayerData } from '../Data/PlayerData';
 import { CardNode } from './CardNode';
 import { ConfigLoader } from '../Config/ConfigLoader';
@@ -20,8 +20,10 @@ export class GameScene extends Component {
     public timerLab: Label = null!;
     @property({ type: Label }) // 用户显示得分
     public scoreLab: Label = null!;
-    @property({ type: CCInteger }) // 记忆时间
-    public timerLimit: number = 0;
+    @property({ type: UITransform }) // 结束界面
+    public endGame: UITransform = null!;
+    @property({ type: Button }) // 重新开始按钮
+    public restartBtn: Button = null!;
 
 
     // 当前的得分
@@ -43,7 +45,8 @@ export class GameScene extends Component {
 
 
     start() {
-        this.timerLab.string = "记忆时间：" + this.timerLimit;
+        this.endGame.node.active = false;
+        this.timerLab.string = "记忆时间：" + this._playerData.timerLimit;
         // 开启界面禁止点击
         this._forbidClick = true;
         // 初始化卡片列表
@@ -101,8 +104,11 @@ export class GameScene extends Component {
                 this.unschedule(this._onGameTimer);
                 this._forbidClick = true;
                 console.log("游戏结束");
+                this.endGame.node.active = true;
                 // 弹出确认提示框，点击确认回到Main场景
-                director.loadScene('Main');
+                this.restartBtn.node.on(Button.EventType.CLICK, () => {
+                    director.loadScene('Main');
+                }, this);
             }
         }
     }
@@ -165,9 +171,9 @@ export class GameScene extends Component {
     /** 定时器回调 */
     private _onLookTimer() {
         this._timerCount += 1;
-        const time = this.timerLimit - this._timerCount;
+        const time = this._playerData.timerLimit - this._timerCount;
         this.timerLab.string = "记忆时间：" + time;
-        if (this._timerCount < this.timerLimit) {
+        if (this._timerCount < this._playerData.timerLimit) {
             return;
         }
 

@@ -28,7 +28,7 @@ export class PlayerData extends Object {
     // 当前积分数
     public score: number = 0
     // 记忆时间
-    public timerLimit: number = 0
+    public timerLimit: number = 6
 
     /** 游戏数据设置 */
     // 格子显示的行列数
