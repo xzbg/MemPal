@@ -1,4 +1,5 @@
-import { _decorator, Component, Label, SpriteFrame, resources, Sprite, Button, EventHandler, UITransform, Size } from 'cc';
+import { _decorator, Component, Label, SpriteFrame, resources, Sprite, Button, EventHandler, UITransform, Size, Color } from 'cc';
+import { Card } from '../Data/Card';
 const { ccclass, property } = _decorator;
 
 /**
@@ -6,26 +7,44 @@ const { ccclass, property } = _decorator;
  */
 @ccclass('CardNode')
 export class CardNode extends Component {
-    @property({ type: Label })
-    public label: Label = null!;
-    @property({ type: Button })
-    public btnCard: Button = null!;
+    @property({ type: Sprite }) // 卡片的背景
+    public imgBg: Sprite = null!;
+    @property({ type: Label }) // 卡片的文字
+    public labText: Label = null!;
+    @property({ type: Sprite }) // 卡片的图标
+    public imgIcon: Sprite = null!;
+    @property({ type: Sprite }) // 卡片的纯色图标
+    public imgColor: Sprite = null!;
+    @property({ type: Button }) // 卡片的按钮
+    public btnClick: Button = null!;
 
-    /** 卡片上的文字 */
-    private cardName: string = "";
+    // 当前的卡片数据
+    private _card: Card = null!;
+
+
     /** 卡片的点击回调函数 */
     private _clickCallback: Function = null!;
 
     start() {
         // 绑定点击事件
-        this.btnCard.node.on(Button.EventType.CLICK, this.onClickCard, this);
+        this.btnClick.node.on(Button.EventType.CLICK, this.onClickCard, this);
         // 加载当前目录下spriteFrame资源 db://assets/GameRes/Images/fruits.plist/fruits_03
-
     }
 
-    /** 设置文字显示 */
-    public setLabel(visible: boolean) {
-        this.label.enabled = visible;
+    /** 节点初始化 */
+    public init(card: Card) {
+        this._card = card;
+        if (this._card.type == Card.CardType.Normal) {
+            // 数字卡片，设置一个纯色的icon
+            this.setText(card.label);
+            this.labText.color = new Color().fromHEX(card.fontColor);
+            this.imgColor.color = new Color().fromHEX(card.bgColor);
+            this.imgIcon.enabled = false;
+        } else if (this._card.type == Card.CardType.Image) {
+            this.labText.enabled = false;
+            this.imgColor.enabled = false;
+            this.imgIcon.color = new Color().fromHEX(card.bgColor);
+        }
     }
 
     /** 绑定点击监听 */
@@ -39,9 +58,18 @@ export class CardNode extends Component {
     }
 
     /** 设置卡片的显示文字 */
-    public setCardName(name: string) {
-        this.cardName = name;
-        this.label.string = name;
+    public setText(text: string) {
+        this.labText.string = text;
+    }
+
+    /** 设置文字显示 */
+    public setVisible(visible: boolean) {
+        if (this._card.type == Card.CardType.Normal) {
+            this.labText.enabled = visible;
+            this.imgColor.enabled = visible;
+        } else if (this._card.type == Card.CardType.Image) {
+            this.imgIcon.enabled = visible;
+        }
     }
 
     /** 设置卡片的大小 */
@@ -51,20 +79,20 @@ export class CardNode extends Component {
     }
 
     /** 设置卡片上的图片 */
-    public setImage(imgPath: string) {
+    public setIcon(imgPath: string) {
         resources.load(imgPath, SpriteFrame, (err, spriteFrame) => {
             if (err) {
                 console.log(err);
                 return;
             }
             // 设置卡片的背景
-            this.btnCard.getComponent(Sprite)!.spriteFrame = spriteFrame;
+            this.imgIcon.getComponent(Sprite)!.spriteFrame = spriteFrame;
         });
     }
 
-    /** 获取卡片的显示文字 */
-    public getCardName() {
-        return this.cardName;
+    /** 获取卡片的配置id */
+    public getId() {
+        return this._card.id;
     }
 
     /**  私有函数 ---------------------------------------- */

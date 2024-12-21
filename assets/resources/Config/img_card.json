@@ -1,16 +1,56 @@
 {
-    "tid_list":[1,2,3,4,5,6,7,8,9,10,11,12,13],
-   "1":{"name":"appple", "path":"Images/fruits/fruits_03"},
-   "2":{"name":"appple", "path":"Images/fruits/fruits_04"},
-   "3":{"name":"appple", "path":"Images/fruits/fruits_05"},
-   "4":{"name":"appple", "path":"Images/fruits/fruits_06"},
-   "5":{"name":"appple", "path":"Images/fruits/fruits_07"},
-   "6":{"name":"appple", "path":"Images/fruits/fruits_08"},
-   "7":{"name":"appple", "path":"Images/fruits/fruits_09"},
-   "8":{"name":"appple", "path":"Images/fruits/fruits_10"},
-   "9":{"name":"appple", "path":"Images/fruits/fruits_11"},
-   "10":{"name":"appple", "path":"Images/fruits/fruits_12"},
-   "11":{"name":"appple", "path":"Images/fruits/fruits_13"},
-   "12":{"name":"appple", "path":"Images/fruits/fruits_14"},
-   "13":{"name":"appple", "path":"Images/fruits/fruits_15"}
+    "tid_list": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+    ],
+    "1": {
+        "path": "Images/fruits/fruits_03"
+    },
+    "2": {
+        "path": "Images/fruits/fruits_04"
+    },
+    "3": {
+        "path": "Images/fruits/fruits_05"
+    },
+    "4": {
+        "path": "Images/fruits/fruits_06"
+    },
+    "5": {
+        "path": "Images/fruits/fruits_07"
+    },
+    "6": {
+        "path": "Images/fruits/fruits_08"
+    },
+    "7": {
+        "path": "Images/fruits/fruits_09"
+    },
+    "8": {
+        "path": "Images/fruits/fruits_10"
+    },
+    "9": {
+        "path": "Images/fruits/fruits_11"
+    },
+    "10": {
+        "path": "Images/fruits/fruits_12"
+    },
+    "11": {
+        "path": "Images/fruits/fruits_13"
+    },
+    "12": {
+        "path": "Images/fruits/fruits_14"
+    },
+    "13": {
+        "path": "Images/fruits/fruits_15"
+    }
 }

@@ -3,6 +3,7 @@ import { PlayerData } from '../Data/PlayerData';
 import { CardNode } from './CardNode';
 import { ConfigLoader } from '../Config/ConfigLoader';
 import { CardLibrary } from '../Data/CardLibrary';
+import { Card } from '../Data/Card';
 const { ccclass, property } = _decorator;
 
 /**
@@ -29,7 +30,7 @@ export class GameScene extends Component {
     private _cardNodeList: CardNode[] = [];
     // 选中的卡片列表，长度只有2
     private _selectedCardList: CardNode[] = [];
-    // 当前倒计时计数
+    // 当前倒计时计数/*  */
     private _timerCount: number = 0;
     // 当前得分上限
     private _scoreLimit: number = 0;
@@ -69,21 +70,21 @@ export class GameScene extends Component {
     /** 卡片的点击响应函数 */
     private onClickCard(cardNode: CardNode) {
         if (this._forbidClick) return;
-        cardNode?.setLabel(true);
+        cardNode?.setVisible(true);
         // 将卡片添加到选中列表中
         if (this._selectedCardList.length <= 0) {
             this._selectedCardList.push(cardNode);
         } else if (this._selectedCardList.length == 1) {
             this._selectedCardList.push(cardNode);
-            if (this._selectedCardList[0].getCardName() == this._selectedCardList[1].getCardName()) {
+            if (this._selectedCardList[0].getId() == this._selectedCardList[1].getId()) {
                 this._selectedCardList[0].removeClick();
                 this._selectedCardList[1].removeClick();
                 this._selectedCardList = [];
                 this._addScore();
             }
         } else if (this._selectedCardList.length == 2) {
-            this._selectedCardList[0].setLabel(false);
-            this._selectedCardList[1].setLabel(false);
+            this._selectedCardList[0].setVisible(false);
+            this._selectedCardList[1].setVisible(false);
             this._selectedCardList = [];
 
             this._selectedCardList.push(cardNode);
@@ -116,8 +117,8 @@ export class GameScene extends Component {
         console.log("sizeNum", sizeNum);
 
         // 便利卡片数据列表，生成卡片
-        cardDataList.forEach((num) => {
-            let cardNode = this._createCard(num.toString());
+        cardDataList.forEach((card) => {
+            let cardNode = this._createCard(card);
             cardNode.setCardSize(cardWidth, cardHeight);
             this._cardNodeList.push(cardNode);
         });
@@ -136,13 +137,12 @@ export class GameScene extends Component {
     }
 
     /** 构造一个指定内容的卡片 */
-    private _createCard(name: string) {
+    private _createCard(card: Card) {
         const cardPrefab = instantiate(this.cardPrefab);
         let cardNode = cardPrefab.getComponent(CardNode);
         // 绑定一个当前类的函数，用于处理卡片的点击事件
         cardNode?.bindClick(this.onClickCard.bind(this));
-        cardNode?.setLabel(true);
-        cardNode?.setCardName(name);
+        cardNode?.init(card);
         return cardNode;
     }
 
@@ -157,7 +157,7 @@ export class GameScene extends Component {
 
         // 遍历所有的卡片，将卡片的文字隐藏
         this._cardNodeList.forEach(cardNode => {
-            cardNode?.setLabel(false);
+            cardNode?.setVisible(false);
         });
         // 取消定时器
         this.unschedule(this._onLookTimer);

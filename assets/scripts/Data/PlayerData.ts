@@ -31,7 +31,7 @@ export class PlayerData extends Object {
     /** 游戏数据设置 */
     // 格子显示的行列数
     public row: number = 4;
-    public col: number = 10;
+    public col: number = 4;
 
     // 卡片类型
     public cardType: number = 0;
