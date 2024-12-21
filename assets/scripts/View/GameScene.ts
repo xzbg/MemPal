@@ -1,6 +1,8 @@
-import { _decorator, Component, director, Layout, Prefab, instantiate, CCInteger, Label } from 'cc';
-import { Card } from './Card';
+import { _decorator, Component, director, Layout, Prefab, instantiate, CCInteger, Label, Size, UITransform, math } from 'cc';
+import { PlayerData } from '../Data/PlayerData';
+import { CardNode } from './CardNode';
 import { ConfigLoader } from '../Config/ConfigLoader';
+import { CardLibrary } from '../Data/CardLibrary';
 const { ccclass, property } = _decorator;
 
 /**
@@ -9,14 +11,12 @@ const { ccclass, property } = _decorator;
  */
 @ccclass('GameScene')
 export class GameScene extends Component {
-    @property({ type: Layout })// 卡片的布局组件
-    public layout: Layout = null!;
+    @property({ type: Layout })// 卡片的展示父节点
+    public cardGrid: Layout = null!;
     @property({ type: Prefab })// 卡片的预制体
     public cardPrefab: Prefab = null!;
     @property({ type: Label }) // 用户显示倒计时
     public timerLab: Label = null!;
-    @property({ type: CCInteger })// 卡片的数量
-    public size_num: number = 0;
     @property({ type: Label }) // 用户显示得分
     public scoreLab: Label = null!;
     @property({ type: CCInteger }) // 记忆时间
@@ -26,20 +26,24 @@ export class GameScene extends Component {
     // 当前的得分
     private _score: number = 0;
     // 所有的卡片列表
-    private _cardList: Card[] = [];
+    private _cardNodeList: CardNode[] = [];
     // 选中的卡片列表，长度只有2
-    private _selectedCardList: Card[] = [];
+    private _selectedCardList: CardNode[] = [];
     // 当前倒计时计数
     private _timerCount: number = 0;
     // 当前得分上限
     private _scoreLimit: number = 0;
     // 禁止点击标识
     private _forbidClick: boolean = false;
-
+    // 玩家数据对象
+    private _playerData: PlayerData = PlayerData.getInstance();
+    // 卡片库对象
+    private _cardLibrary: CardLibrary = CardLibrary.getInstance();
 
 
     start() {
         this.timerLab.string = "记忆时间：" + this.timerLimit;
+        // 开启界面禁止点击
         this._forbidClick = true;
         // 初始化卡片列表
         this._initCardList();
@@ -63,14 +67,14 @@ export class GameScene extends Component {
     }
 
     /** 卡片的点击响应函数 */
-    private onClickCard(card: Card) {
+    private onClickCard(cardNode: CardNode) {
         if (this._forbidClick) return;
-        card?.setLabel(true);
+        cardNode?.setLabel(true);
         // 将卡片添加到选中列表中
         if (this._selectedCardList.length <= 0) {
-            this._selectedCardList.push(card);
+            this._selectedCardList.push(cardNode);
         } else if (this._selectedCardList.length == 1) {
-            this._selectedCardList.push(card);
+            this._selectedCardList.push(cardNode);
             if (this._selectedCardList[0].getCardName() == this._selectedCardList[1].getCardName()) {
                 this._selectedCardList[0].removeClick();
                 this._selectedCardList[1].removeClick();
@@ -82,53 +86,64 @@ export class GameScene extends Component {
             this._selectedCardList[1].setLabel(false);
             this._selectedCardList = [];
 
-            this._selectedCardList.push(card);
+            this._selectedCardList.push(cardNode);
         }
     }
 
     /** 初始化当前卡片列表 */
     private _initCardList() {
-        console.log(11111);
-        // 读取json文件，获取当前游戏的配置信息
-        const config = ConfigLoader.getInstance().loadConfig("img_card.json", (data) => {
-            console.log(33333);
+        // 按照行列，将卡片排列到屏幕上
+        let gridRow = this._playerData.getRow();
+        let gridCol = this._playerData.getCol();
+
+        let transform = this.cardGrid.getComponent(UITransform)
+        let gridWidth = transform.width;
+        let gridHeight = transform.height;
+
+        // 设置卡片的大小
+        gridWidth = gridWidth - this.cardGrid.spacingX * (gridCol - 1);
+        gridHeight = gridHeight - this.cardGrid.spacingY * (gridRow - 1);
+
+        let cardWidth = Math.floor(gridWidth / gridCol);
+        let cardHeight = Math.floor(gridHeight / gridRow);
+
+        // 设置grid容器的属性
+        this.cardGrid.constraintNum = gridCol;
+
+
+        let sizeNum = gridCol * gridRow / 2;
+        let cardDataList = this._cardLibrary.getRandomCard(this._playerData.cardType, sizeNum);
+        console.log("sizeNum", sizeNum);
+
+        // 便利卡片数据列表，生成卡片
+        cardDataList.forEach((num) => {
+            let cardNode = this._createCard(num.toString());
+            cardNode.setCardSize(cardWidth, cardHeight);
+            this._cardNodeList.push(cardNode);
         });
 
-        // 通过设定的数量，计算卡片上的数字
-        let num = Math.floor(this.size_num / 2);
-        this._scoreLimit = num;
-        // 先按顺序生成卡片，为卡片分配对应的数字
-        for (let i = 0; i < num; i++) {
-            // 通过卡片的预制体，生成一定数量的卡片，每2个为一组
-            let cardA = this._createCard(i.toString());
-            // 将卡片添加到卡片列表中
-            this._cardList.push(cardA);
-            // 通过卡片的预支体，生成一定数量的卡片
-            let cardB = this._createCard(i.toString());
-            // 将卡片添加到卡片列表中
-            this._cardList.push(cardB);
-        }
+
         // 将列表打乱顺序，然后添加到布局中
-        this._cardList.sort(() => Math.random() - 0.5);
+        this._cardNodeList.sort(() => Math.random() - 0.5);
         this._addCardToLayout();
     }
 
     /** 将卡片显示到布局组件上 */
     private _addCardToLayout() {
-        this._cardList.forEach(card => {
-            this.layout.node.addChild(card.node);
+        this._cardNodeList.forEach(card => {
+            this.cardGrid.node.addChild(card.node);
         });
     }
 
     /** 构造一个指定内容的卡片 */
     private _createCard(name: string) {
-        const cardNode = instantiate(this.cardPrefab);
-        let card = cardNode.getComponent(Card);
+        const cardPrefab = instantiate(this.cardPrefab);
+        let cardNode = cardPrefab.getComponent(CardNode);
         // 绑定一个当前类的函数，用于处理卡片的点击事件
-        card?.bindClick(this.onClickCard.bind(this));
-        card?.setLabel(true);
-        card?.setCardName(name);
-        return card;
+        cardNode?.bindClick(this.onClickCard.bind(this));
+        cardNode?.setLabel(true);
+        cardNode?.setCardName(name);
+        return cardNode;
     }
 
     /** 定时器回调 */
@@ -141,8 +156,8 @@ export class GameScene extends Component {
         }
 
         // 遍历所有的卡片，将卡片的文字隐藏
-        this._cardList.forEach(card => {
-            card?.setLabel(false);
+        this._cardNodeList.forEach(cardNode => {
+            cardNode?.setLabel(false);
         });
         // 取消定时器
         this.unschedule(this._onLookTimer);
@@ -156,6 +171,7 @@ export class GameScene extends Component {
         this._timerCount += 1;
         this.timerLab.string = "游戏时间：" + this._timerCount;
     }
+
 }
 
 

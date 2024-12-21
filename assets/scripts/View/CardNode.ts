@@ -1,11 +1,11 @@
-import { _decorator, Component, Label, SpriteFrame, resources, Sprite, Button, EventHandler } from 'cc';
+import { _decorator, Component, Label, SpriteFrame, resources, Sprite, Button, EventHandler, UITransform, Size } from 'cc';
 const { ccclass, property } = _decorator;
 
 /**
  * 游戏卡片
  */
-@ccclass('Card')
-export class Card extends Component {
+@ccclass('CardNode')
+export class CardNode extends Component {
     @property({ type: Label })
     public label: Label = null!;
     @property({ type: Button })
@@ -42,6 +42,12 @@ export class Card extends Component {
     public setCardName(name: string) {
         this.cardName = name;
         this.label.string = name;
+    }
+
+    /** 设置卡片的大小 */
+    public setCardSize(width: number, height: number) {
+        let trans = this.getComponent(UITransform)
+        trans.contentSize = new Size(width, height)
     }
 
     /** 设置卡片上的图片 */
