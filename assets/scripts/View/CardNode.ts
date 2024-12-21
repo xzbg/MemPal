@@ -52,7 +52,12 @@ export class CardNode extends Component {
         this._clickCallback = callback;
     }
 
-    /** 移除监听 */
+    /** 禁用点击 */
+    public disableClick(enable: boolean) {
+        this.btnClick.interactable = !enable;
+    }
+
+    /** 移除监听函数 */
     public removeClick() {
         this._clickCallback = null!;
     }
@@ -70,6 +75,16 @@ export class CardNode extends Component {
         } else if (this._card.type == Card.CardType.Image) {
             this.imgIcon.enabled = visible;
         }
+    }
+
+    /** 设置卡片已被选中 */
+    public setSelected() {
+        this._card.setState(Card.CardState.Selected);
+    }
+
+    /** 卡片是否已被选中 */
+    public isSelected() {
+        return this._card.state == Card.CardState.Selected;
     }
 
     /** 设置卡片的大小 */

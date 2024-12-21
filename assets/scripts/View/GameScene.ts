@@ -57,37 +57,53 @@ export class GameScene extends Component {
     private _addScore() {
         this._score += 1;
         this.scoreLab.string = "得分：" + this._score.toString();
-        if (this._score >= this._scoreLimit) {
-            // 取消定时器
-            this.unschedule(this._onGameTimer);
-            // 启动定时器，跳转到游戏开始场景
-            this.scheduleOnce(() => {
-                director.loadScene('Main');
-            }, 3);
-        }
     }
 
     /** 卡片的点击响应函数 */
     private onClickCard(cardNode: CardNode) {
         if (this._forbidClick) return;
-        cardNode?.setVisible(true);
-        // 将卡片添加到选中列表中
-        if (this._selectedCardList.length <= 0) {
-            this._selectedCardList.push(cardNode);
-        } else if (this._selectedCardList.length == 1) {
-            this._selectedCardList.push(cardNode);
-            if (this._selectedCardList[0].getId() == this._selectedCardList[1].getId()) {
-                this._selectedCardList[0].removeClick();
-                this._selectedCardList[1].removeClick();
-                this._selectedCardList = [];
-                this._addScore();
-            }
-        } else if (this._selectedCardList.length == 2) {
+
+        if (this._selectedCardList.length >= 2) {
+            // 如果已经选中了2张卡片，那么将之前选中的卡片翻转回去
             this._selectedCardList[0].setVisible(false);
             this._selectedCardList[1].setVisible(false);
+            this._selectedCardList[0].disableClick(false);
+            this._selectedCardList[1].disableClick(false);
+            this._selectedCardList = [];
+        }
+
+        // 将卡片添加到选中列表中
+        cardNode?.setVisible(true);
+        this._selectedCardList.push(cardNode);
+        cardNode.disableClick(true);
+
+        console.log("选中卡片数量", this._selectedCardList.length);
+        // 还未选中2张卡片，直接返回
+        if (this._selectedCardList.length < 2) return;
+
+        // 如果选中了2张卡片，那么进行比较,如果不相同，那么翻转回去
+        if (this._selectedCardList[0].getId() == this._selectedCardList[1].getId()) {
+            this._selectedCardList[0].setSelected();
+            this._selectedCardList[1].setSelected();
+            this._addScore();
+
             this._selectedCardList = [];
 
-            this._selectedCardList.push(cardNode);
+            // 检查游戏是否结束，如果所有的卡都反过来了，那么游戏结束
+            let isAllCardVisible = true;
+            this._cardNodeList.forEach(cardNode => {
+                if (!cardNode.isSelected()) {
+                    isAllCardVisible = false;
+                    return;
+                }
+            });
+            if (isAllCardVisible) {
+                this.unschedule(this._onGameTimer);
+                this._forbidClick = true;
+                console.log("游戏结束");
+                // 弹出确认提示框，点击确认回到Main场景
+                director.loadScene('Main');
+            }
         }
     }
 

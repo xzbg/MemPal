@@ -27,6 +27,8 @@ export class PlayerData extends Object {
     public challenge: number = 0
     // 当前积分数
     public score: number = 0
+    // 记忆时间
+    public timerLimit: number = 0
 
     /** 游戏数据设置 */
     // 格子显示的行列数
@@ -60,6 +62,11 @@ export class PlayerData extends Object {
     // 获取格子的行列数
     public getCol(): number {
         return this.col;
+    }
+
+    // 检查是否通过当前关卡
+    public checkPass(): boolean {
+        return this.score >= this.challenge;
     }
 }
 

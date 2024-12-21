@@ -13,16 +13,22 @@ export class Card extends Object {
         Image: 1,  // 图片卡片
     }
 
+    // 定义卡片的状态枚举
+    public static CardState = {
+        Normal: 0,  // 未选中
+        Selected: 1,  // 选中
+    }
+
 
     /** 配置属性 */
     // 卡片的唯一id
     public uid: number = 0;
     // 卡片的定义id
     public id = 0;
-    // 卡片的类型
+    // 卡片的类型：普通的文字卡，还是图片卡
     public type: number = Card.CardType.Normal;
-    // 卡片的状态
-    public state: number = 0;
+    // 卡片的状态：选中、未选中
+    public state: number = Card.CardState.Normal;
     // 卡片的文字标签
     public label: string = "";
     // 卡片的图片路径
@@ -35,6 +41,11 @@ export class Card extends Object {
     /** 过程缓存 */
     // 卡片的节点
     public node: Node = null;
+
+    // 设置卡片的状态
+    public setState(state: number) {
+        this.state = state;
+    }
 
     // 卡片信息的克隆方法，从当前的数据中克隆一个新的数据
     public clone(): Card {
